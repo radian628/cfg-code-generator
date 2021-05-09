@@ -15,7 +15,7 @@ If the replacer is an object, it has three properties- `tokens`, `weight`, and `
 
 As an example, here is a rule that generates arbitrary mathematical expressions containing addition and subtraction between single digits.
 ```js
-import { CFGRule, CFGReplacement, CFGToken, CFGRuleset } from "./cfg-generator.js";
+import { CFGRuleset } from "./cfg-generator.js";
 import { Rules } from "./cfg-rules.js";
 
 let addSubtractRules = CFGRuleset.fromJSON({
