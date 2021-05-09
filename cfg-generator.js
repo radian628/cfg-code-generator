@@ -17,7 +17,7 @@ export class CFGReplacement {
 }
 
 export class CFGRule {
-	constructor(identifier, replacements, settings) {
+	constructor(identifier, replacements) {
     	this.identifier = identifier;
         this.replacements = replacements;
     }
@@ -36,33 +36,47 @@ export class CFGRule {
     }
 }
 
+export class CFGRuleset {
+    constructor (rules) {
+        this.rules = rules;
+    }
+
+    static fromJSON(json) {
+        let rules = [];
+
+        Object.keys(json).forEach(key => {
+            let replacements = [];
+            json[key].forEach(replacementJSON => {
+                let tokens = [];
+                replacementJSON.forEach(tokenJSON => {
+                    tokens.push(new CFGToken(tokenJSON[0], tokenJSON[1]));
+                });
+
+                replacements.push(new CFGReplacement(tokens));
+            });
+
+            let rule = new CFGRule(key, replacements);
+            rules.push(rule);
+        });
+
+        return new CFGRuleset(rules);
+    }
+
+    makeString(startRule, iters) {
+        for (let i = 0; iters > i; i++) {
+            this.rules.forEach(rule => {
+                startRule = rule.replace(startRule);
+            });
+        }
+        return CFGConcretify(startRule);
+    }
+}
+
 export function CFGConcretify(arr) {
 	return arr.map(elem => {
     	return (elem.isString) ? elem.content : "";
     }).join("");
 }
 
-let testStr = [
-{
-	content: "test",
-    isString: false
-}
-];
 
-let rule = new CFGRule("test", [
-	new CFGReplacement([
-    	new CFGToken("test", false),
-    	new CFGToken(" x ", true),
-    	new CFGToken("test", false)
-    ]),
-	new CFGReplacement([
-    	new CFGToken(" e ", true),
-    ]),
-]);
-
-for (let i = 0; 6 > i; i++) {
-	testStr = rule.replace(testStr);
-}
-
-console.log(CFGConcretify(testStr));
 
