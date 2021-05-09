@@ -1,91 +1,22 @@
-import { CFGRule, CFGReplacement, CFGToken, CFGRuleset } from "./cfg-generator.js";
+import { CFGRuleset } from "./cfg-generator.js";
 import { Rules } from "./cfg-rules.js";
 
 let addSubtractRules = CFGRuleset.fromJSON({
-    expr: [
-        {
-            tokens: [
-                ["expr"],
-                [" ", true],
-                ["operation"],
-                [" ", true],
-                ["expr"]
-            ],
-            weight: 5,
-            limitWeight: 0
-        },
-        {
-            tokens: [
-                ["(", true],
-                ["expr"],
-                [" ", true],
-                ["operation"],
-                [" ", true],
-                ["expr"],
-                [")", true]
-            ],
-            weight: 2,
-            limitWeight: 0
-        },
-        {
-            tokens: [["signedDigit"]],
-            weight: 1
-        }
-    ],
-    operation: [
-        [["+", true]],
-        [["-", true]]
-    ],
+    expr: Rules.expression("expr", "operation", "signedDigit", 6, 3, 1),
+    operation: Rules.strChoices("-", "+"),
     digit: Rules.digit,
     signedDigit: Rules.signedDigit
 });
 
 let booleanRules = CFGRuleset.fromJSON({
-    boolExpr: [
-        {
-            tokens: [
-                ["boolExpr"],
-                [" ", true],
-                ["logicOperator"],
-                [" ", true],
-                ["boolExpr"]
-            ],
-            weight: 5,
-            limitWeight: 0
-        },
-        {
-            tokens: [
-                ["maybeNot"],
-                ["(", true],
-                ["boolExpr"],
-                [" ", true],
-                ["logicOperator"],
-                [" ", true],
-                ["boolExpr"],
-                [")", true]
-            ],
-            weight: 3,
-            limitWeight: 0
-        },
-        {
-            tokens: [
-                [["bool"]]
-            ],
-            weight: 1
-        }
-    ],
-    bool: [
-        [["true", true]],
-        [["false", true]]
-    ],
-    maybeNot: [
-        [["!", true]],
-        [["", true]]
-    ],
-    logicOperator: [
-        [["&&", true]],
-        [["||", true]]
-    ]
+    boolExpr: (() => {
+        let rule = Rules.expression("boolExpr", "logicOperator", "bool", 5, 3, 1);
+        rule[1].tokens.splice(0, 0, ["maybeNot"]);
+        return rule;
+    })(),
+    bool: Rules.strChoices("true", "false"),
+    maybeNot: Rules.strChoices("", "!"),
+    logicOperator: Rules.strChoices("&&", "||")
 });
 
 let test = [

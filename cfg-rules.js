@@ -19,5 +19,42 @@ export const Rules = {
         [
             ["digit"]
         ]
-    ] 
+    ],
+    expression: function (exprName, operName, baseName, noParenWeight, parenWeight, baseWeight) {
+        return [
+            {
+                tokens: [
+                    [exprName],
+                    [" ", true],
+                    [operName],
+                    [" ", true],
+                    [exprName]
+                ],
+                weight: noParenWeight,
+                limitWeight: 0
+            },
+            {
+                tokens: [
+                    ["(", true],
+                    [exprName],
+                    [" ", true],
+                    [operName],
+                    [" ", true],
+                    [exprName],
+                    [")", true]
+                ],
+                weight: parenWeight,
+                limitWeight: 0
+            },
+            {
+                tokens: [
+                    [[baseName]]
+                ],
+                weight: baseWeight
+            }
+        ]
+    },
+    strChoices: function(...strings) {
+        return strings.map(str => [[str, true]]);
+    }
 }
