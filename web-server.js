@@ -6,11 +6,11 @@ const PORT = 8080;
 
 const server = http.createServer(async (req, res) => {
     let urlPath = "." + req.url;
-    let file = await fs.readFile(urlPath);
-    if (file) {
+    try {
+        let file = await fs.readFile(urlPath);
         res.setHeader("Content-Type", mime.lookup(urlPath));
         res.end(file);
-    } else {
+    } catch(err) {
         res.statusCode = 404;
         res.end("404 NOT FOUND");
     }

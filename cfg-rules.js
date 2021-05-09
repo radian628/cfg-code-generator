@@ -58,3 +58,22 @@ export const Rules = {
         return strings.map(str => [[str, true]]);
     }
 }
+
+export const Rulesets = {
+    addSubMath: {
+        expr: Rules.expression("expr", "operation", "signedDigit", 6, 3, 1),
+        operation: Rules.strChoices("-", "+"),
+        digit: Rules.digit,
+        signedDigit: Rules.signedDigit
+    },
+    booleans: {
+        boolExpr: (() => {
+            let rule = Rules.expression("boolExpr", "logicOperator", "bool", 5, 3, 1);
+            rule[1].tokens.splice(0, 0, ["maybeNot"]);
+            return rule;
+        })(),
+        bool: Rules.strChoices("true", "false"),
+        maybeNot: Rules.strChoices("", "!"),
+        logicOperator: Rules.strChoices("&&", "||")
+    }
+}
